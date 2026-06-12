@@ -12,14 +12,11 @@ export async function loadPlanetTexture(
   url: string,
   fallbackColor: string
 ): Promise<TextureResult> {
-  let lastError: Error | null = null
-
   for (let attempt = 0; attempt < RETRY_COUNT; attempt++) {
     try {
       const texture = await loadWithTimeout(url)
       return { success: true, texture }
-    } catch (error) {
-      lastError = error as Error
+    } catch {
       console.warn(`Texture load attempt ${attempt + 1} failed:`, url)
     }
   }

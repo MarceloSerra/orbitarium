@@ -20,6 +20,9 @@ export interface OrbitConfig {
   radius: number
   speed: number
   angle: number
+  color?: string
+  opacity?: number
+  thickness?: number
 }
 
 export interface CelestialInfo extends PlanetData {
