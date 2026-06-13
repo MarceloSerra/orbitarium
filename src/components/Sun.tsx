@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 
 interface SunProps {
   radius?: number
@@ -41,7 +42,7 @@ export function Sun({ radius = 3.5 }: SunProps) {
             
             float noise(vec3 p) {
               vec3 d = floor(p);
-              vec4 o = smoothstep(0.0, 1.0, fract(p - d));
+              vec3 o = smoothstep(0.0, 1.0, fract(p - d));
               return mix(hash(d), hash(d + 1.0), o.x);
             }
             
@@ -102,6 +103,18 @@ export function Sun({ radius = 3.5 }: SunProps) {
           uniforms={{ uTime: { value: 0 } }}
         />
       </mesh>
+
+      <Html center>
+        <div style={{
+          color: '#ffddaa',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          textShadow: '0 0 6px rgba(255, 170, 50, 0.8)',
+          pointerEvents: 'none'
+        }}>
+          Sun
+        </div>
+      </Html>
     </group>
   )
 }

@@ -61,6 +61,7 @@ export function StarField({ count = 2000, radius = 500 }: StarFieldProps) {
       <shaderMaterial
         vertexShader={`
           attribute float size;
+          attribute vec3 color;
           varying vec3 vColor;
           
           void main() {
