@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import { SolarSystem, InfoPanel } from './components'
+import { SolarSystem, InfoPanel, PostProcessing, ControlPanel } from './components'
 import { planets } from './data/planets'
 import { useStore } from './store'
 
@@ -17,8 +17,10 @@ export default function App() {
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 0, 0]} intensity={2} />
         <Scene />
+        <PostProcessing bloomIntensity={1.5} />
         <OrbitControls autoRotate autoRotateSpeed={0.5 * (autoRotate ? 1 : 0)} />
       </Canvas>
+      <ControlPanel planets={planets.map(p => ({ data: p }))} />
       <InfoPanel />
     </>
   )

@@ -1,54 +1,48 @@
-import { useRef, useState, useMemo } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { Html, Line } from '@react-three/drei'
+import { useRef, useState } from 'react'
 import * as THREE from 'three'
-import type { PlanetData, OrbitConfig } from '../types/planet'
+import { useFrame } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
+import type { PlanetData } from '../types/planet'
+import { useStore } from '../store'
 
 interface PlanetProps {
   data: PlanetData
-  orbit: OrbitConfig
   onSelect?: (planet: PlanetData) => void
 }
 
-export default function Planet({ data, orbit, onSelect }: PlanetProps) {
+const atmosphereColors: Record<string, string> = {
+  rocky: '#4488ff',
+  gas: '#ffaa44',
+  ice: '#66ccff'
+}
+
+export default function Planet({ data, onSelect }: PlanetProps) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const angleRef = useRef(Math.random() * Math.PI * 2)
+  const atmosphereRef = useRef<THREE.Mesh>(null)
+  const ringRef = useRef<THREE.Mesh>(null)
   const [hovered, setHovered] = useState(false)
 
-  const orbitPoints = useMemo(() => {
-    const points: THREE.Vector3[] = []
-    const segments = 128
-    for (let i = 0; i <= segments; i++) {
-      const angle = (i / segments) * Math.PI * 2
-      points.push(new THREE.Vector3(
-        Math.cos(angle) * orbit.radius,
-        0,
-        Math.sin(angle) * orbit.radius
-      ))
-    }
-    return points
-  }, [orbit.radius])
+  const physicsState = useStore((state) => state.physicsState)
+  const body = physicsState.bodies[data.name]
 
-  const orbitalSpeed = useMemo(() => (2 * Math.PI) / (data.orbitalPeriod * 0.1), [data.orbitalPeriod])
-  const rotationSpeed = useMemo(() => {
-    const abs = Math.abs(data.rotationPeriod)
-    return abs > 0 ? (2 * Math.PI) / (abs * 50) : 0
-  }, [data.rotationPeriod])
+  const rotationSpeed = (2 * Math.PI) / (Math.abs(data.rotationPeriod) * 50 || 1)
 
-  useFrame((_, delta) => {
-    if (meshRef.current) {
-      angleRef.current += orbitalSpeed * delta
-      const x = Math.cos(angleRef.current) * orbit.radius
-      const z = Math.sin(angleRef.current) * orbit.radius
-      meshRef.current.position.set(x, 0, z)
-      meshRef.current.rotation.y += rotationSpeed * delta
+  useFrame(() => {
+    if (!meshRef.current || !body) return
+
+    meshRef.current.position.copy(body.position)
+    meshRef.current.rotation.y += rotationSpeed * 0.016
+
+    if (atmosphereRef.current) {
+      atmosphereRef.current.rotation.y = meshRef.current.rotation.y
     }
   })
 
+  const isGasGiant = data.type === 'gas'
+  const hasRings = data.name === 'Saturn' || data.name === 'Uranus'
+
   return (
     <group>
-      <Line points={orbitPoints} color={orbit.color} lineWidth={1} />
-
       <mesh
         ref={meshRef}
         onClick={() => onSelect?.(data)}
@@ -56,7 +50,45 @@ export default function Planet({ data, orbit, onSelect }: PlanetProps) {
         onPointerOut={() => setHovered(false)}
       >
         <sphereGeometry args={[data.scaledRadius, 32, 32]} />
-        <meshStandardMaterial color={hovered ? 0xffffff : data.fallbackColor} />
+        <meshStandardMaterial color={hovered ? '#ffffff' : data.fallbackColor} />
+
+        {isGasGiant && (
+          <mesh ref={atmosphereRef}>
+            <sphereGeometry args={[data.scaledRadius * 1.05, 32, 32]} />
+            <shaderMaterial
+              transparent
+              vertexShader={`
+                varying vec3 vNormal;
+                void main() {
+                  vNormal = normalize(normalMatrix * normal);
+                  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+              `}
+              fragmentShader={`
+                varying vec3 vNormal;
+                uniform vec3 uColor;
+                void main() {
+                  float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                  gl_FragColor = vec4(uColor, intensity * 0.5);
+                }
+              `}
+              uniforms={{ uColor: { value: new THREE.Color(atmosphereColors[data.type]) } }}
+            />
+          </mesh>
+        )}
+
+        {hasRings && (
+          <mesh ref={ringRef} rotation={[Math.PI / 3, 0, 0]}>
+            <ringGeometry args={[data.scaledRadius * 1.4, data.scaledRadius * 2.2, 64]} />
+            <meshStandardMaterial
+              color="#ccaa88"
+              side={THREE.DoubleSide}
+              transparent
+              opacity={0.7}
+            />
+          </mesh>
+        )}
+
         <Html center>
           <div style={{
             color: 'white',

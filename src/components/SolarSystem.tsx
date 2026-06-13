@@ -1,30 +1,35 @@
-import { Stars } from '@react-three/drei'
+import { useRef } from 'react'
 import type { PlanetData, OrbitConfig } from '../types/planet'
 import Planet from './Planet'
+import { StarField } from './StarField'
+import { Sun } from './Sun'
+import { usePhysics } from '../hooks/use-physics'
+import { CameraControls } from '@react-three/drei'
 
 interface SolarSystemProps {
-  planets: Array<{ data: PlanetData; orbit: OrbitConfig }>
+  planets: Array<{ data: PlanetData; orbit?: OrbitConfig }>
   onSelect?: (planet: PlanetData) => void
 }
 
 export default function SolarSystem({ planets, onSelect }: SolarSystemProps) {
+  usePhysics(planets)
+  const controlsRef = useRef<CameraControls>(null)
+
   return (
     <group>
-      <Stars count={15000} radius={200} />
+      <StarField count={2000} radius={500} />
 
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[3.5, 64, 64]} />
-        <meshStandardMaterial emissive="#ffaa00" emissiveIntensity={2} color="#ffcc00" />
-      </mesh>
+      <Sun />
 
       {planets.map((planet) => (
         <Planet
           key={planet.data.name}
           data={planet.data}
-          orbit={planet.orbit}
           onSelect={onSelect}
         />
       ))}
+
+      <CameraControls ref={controlsRef} />
     </group>
   )
 }

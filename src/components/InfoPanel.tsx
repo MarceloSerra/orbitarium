@@ -5,6 +5,9 @@ export default function InfoPanel() {
   const selectedPlanet = useStore((state) => state.selectedPlanet)
   const showInfoPanel = useStore((state) => state.showInfoPanel)
   const setSelectedPlanet = useStore((state) => state.setSelectedPlanet)
+  const physicsState = useStore((state) => state.physicsState)
+
+  const body = selectedPlanet ? physicsState.bodies[selectedPlanet.name] : null
 
   return (
     <AnimatePresence>
@@ -62,6 +65,14 @@ export default function InfoPanel() {
             <p>Orbital Period: {selectedPlanet.orbitalPeriod} days</p>
             <p>Temperature: {selectedPlanet.temperature}°C</p>
           </div>
+
+          {body && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, marginBottom: 8, color: '#88aaff' }}>Orbital Telemetry</h3>
+              <p>Velocity: {(Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2 + body.velocity.z ** 2)).toFixed(2)} km/s</p>
+              <p>Distance from Sun: {Math.sqrt(body.position.x ** 2 + body.position.y ** 2 + body.position.z ** 2).toFixed(2)} AU</p>
+            </div>
+          )}
 
           {selectedPlanet.atmosphere.length > 0 && (
             <div style={{ marginBottom: 20 }}>

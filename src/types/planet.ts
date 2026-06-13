@@ -14,6 +14,7 @@ export interface PlanetData {
   facts: string[]
   textureUrl: string
   fallbackColor: string
+  eccentricity?: number
 }
 
 export interface OrbitConfig {

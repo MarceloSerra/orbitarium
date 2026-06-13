@@ -1,3 +1,7 @@
 export { default as Planet } from './Planet'
 export { default as SolarSystem } from './SolarSystem'
 export { default as InfoPanel } from './InfoPanel'
+export { StarField } from './StarField'
+export { Sun } from './Sun'
+export { PostProcessing } from './PostProcessing'
+export { default as ControlPanel } from './ControlPanel'
