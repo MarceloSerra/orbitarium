@@ -23,6 +23,7 @@ export function StarField({ count = 2000, radius = 500 }: StarFieldProps) {
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
+    const twinkleSpeeds = new Float32Array(count)
 
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2
@@ -39,11 +40,13 @@ export function StarField({ count = 2000, radius = 500 }: StarFieldProps) {
       colors[i * 3 + 2] = color.b
 
       sizes[i] = Math.random() * 2 + 0.5
+      twinkleSpeeds[i] = Math.random() * 3 + 0.5
     }
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+    geo.setAttribute('twinkleSpeed', new THREE.BufferAttribute(twinkleSpeeds, 1))
 
     return geo
   }, [count, radius])
@@ -62,23 +65,34 @@ export function StarField({ count = 2000, radius = 500 }: StarFieldProps) {
         vertexShader={`
           attribute float size;
           attribute vec3 color;
+          attribute float twinkleSpeed;
+          
+          uniform float uTime;
+          
           varying vec3 vColor;
+          varying float vTwinkle;
           
           void main() {
             vColor = color;
+            vTwinkle = sin(uTime * twinkleSpeed) * 0.5 + 0.5;
+            
             vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * (200.0 / -mvPosition.z);
+            gl_PointSize = size * (200.0 / -mvPosition.z) * (0.7 + vTwinkle * 0.3);
             gl_Position = projectionMatrix * mvPosition;
           }
         `}
         fragmentShader={`
           varying vec3 vColor;
+          varying float vTwinkle;
           
           void main() {
             float distance = length(gl_PointCoord - vec2(0.5));
             if (distance > 0.5) discard;
+            
             float alpha = smoothstep(0.5, 0.0, distance);
-            gl_FragColor = vec4(vColor, alpha);
+            float twinkleAlpha = 0.6 + vTwinkle * 0.4;
+            
+            gl_FragColor = vec4(vColor, alpha * twinkleAlpha);
           }
         `}
         uniforms={{ uTime: { value: 0 } }}
