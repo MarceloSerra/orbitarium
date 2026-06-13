@@ -1,7 +1,7 @@
 import { PlanetData } from '../types/planet'
 
-const SCALE_FACTOR = 0.3
-
+// Visual scale — hand-tuned for perceptual clarity, NOT physical accuracy
+// Groups: inner planets → gap → asteroid belt region → gap → gas giants → gaps → ice giants
 export const planets: PlanetData[] = [
   {
     name: 'Mercury',
@@ -10,7 +10,7 @@ export const planets: PlanetData[] = [
     radius: 2439.7,
     scaledRadius: 0.5,
     distanceFromSun: 0.39,
-    scaledDistance: 10 * SCALE_FACTOR,
+    scaledDistance: 8,
     orbitalPeriod: 88,
     rotationPeriod: 58.6,
     temperature: -127,
@@ -31,7 +31,7 @@ export const planets: PlanetData[] = [
     radius: 6051.8,
     scaledRadius: 0.95,
     distanceFromSun: 0.72,
-    scaledDistance: 14 * SCALE_FACTOR,
+    scaledDistance: 12,
     orbitalPeriod: 225,
     rotationPeriod: -243,
     temperature: 464,
@@ -52,7 +52,7 @@ export const planets: PlanetData[] = [
     radius: 6371,
     scaledRadius: 1,
     distanceFromSun: 1,
-    scaledDistance: 18 * SCALE_FACTOR,
+    scaledDistance: 16,
     orbitalPeriod: 365.25,
     rotationPeriod: 1,
     temperature: 15,
@@ -73,7 +73,7 @@ export const planets: PlanetData[] = [
     radius: 3389.5,
     scaledRadius: 0.53,
     distanceFromSun: 1.52,
-    scaledDistance: 22 * SCALE_FACTOR,
+    scaledDistance: 22,
     orbitalPeriod: 687,
     rotationPeriod: 1.03,
     temperature: -63,
@@ -94,7 +94,7 @@ export const planets: PlanetData[] = [
     radius: 69634,
     scaledRadius: 3.5,
     distanceFromSun: 5.2,
-    scaledDistance: 30 * SCALE_FACTOR,
+    scaledDistance: 46,
     orbitalPeriod: 4333,
     rotationPeriod: 0.41,
     temperature: -108,
@@ -115,7 +115,7 @@ export const planets: PlanetData[] = [
     radius: 58232,
     scaledRadius: 3,
     distanceFromSun: 9.54,
-    scaledDistance: 38 * SCALE_FACTOR,
+    scaledDistance: 58,
     orbitalPeriod: 10759,
     rotationPeriod: 0.44,
     temperature: -139,
@@ -136,7 +136,7 @@ export const planets: PlanetData[] = [
     radius: 25362,
     scaledRadius: 2,
     distanceFromSun: 19.19,
-    scaledDistance: 46 * SCALE_FACTOR,
+    scaledDistance: 68,
     orbitalPeriod: 30687,
     rotationPeriod: -0.17,
     temperature: -195,
@@ -157,7 +157,7 @@ export const planets: PlanetData[] = [
     radius: 24622,
     scaledRadius: 1.95,
     distanceFromSun: 30.07,
-    scaledDistance: 54 * SCALE_FACTOR,
+    scaledDistance: 76,
     orbitalPeriod: 60190,
     rotationPeriod: 0.67,
     temperature: -201,
