@@ -93,7 +93,17 @@ function PlanetButton({ planet }: { planet: PlanetData }) {
         textAlign: 'left'
       }}
     >
-      <span style={{ marginRight: 8 }}>{planet.fallbackColor}</span>
+      <span
+        style={{
+          display: 'inline-block',
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
+          background: planet.fallbackColor,
+          marginRight: 8,
+          verticalAlign: 'middle'
+        }}
+      />
       {planet.name}
     </button>
   )
